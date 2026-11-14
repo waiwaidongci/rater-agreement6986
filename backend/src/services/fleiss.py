@@ -4,6 +4,7 @@ class UndefinedKappa(ValueError):pass
 
 def fleiss(counts):
  raw=np.asarray(counts)
+ if raw.size==0:raise UndefinedKappa('齐票试样为0：三人Fleiss κ无法计算（缺票试样已排除，缺票不是类别）')
  if raw.ndim!=2 or raw.shape[0]<2 or raw.shape[1]<2 or not np.isfinite(raw).all() or (raw<0).any() or not np.equal(raw,np.floor(raw)).all():raise ValueError('计数矩阵须至少2试样/2类的非负整数')
  matrix=raw.astype(np.int64);sizes=matrix.sum(axis=1);n=int(sizes[0]);N=len(matrix)
  if n!=3 or not np.all(sizes==n):raise ValueError('每行必须固定3票')

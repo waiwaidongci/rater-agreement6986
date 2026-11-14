@@ -3,7 +3,13 @@ import numpy as np
 from .fleiss import fleiss,UndefinedKappa
 
 def row_bootstrap(counts,repeats,seed):
- matrix=np.asarray(counts,dtype=int);N=len(matrix);rng=np.random.default_rng(seed);records=[];values=[];failures=Counter()
+ matrix=np.asarray(counts,dtype=int);N=len(matrix)
+ if N==0:
+  reason='齐票试样为0：无法整行重采样，三人κ区间不报告'
+  records=[{'repeat':i,'sample_indices':[],'kappa':None,'valid':False,'reason':reason} for i in range(repeats)]
+  edges=np.linspace(-1,1,21)
+  return {'seed':seed,'requested_repeats':repeats,'valid_repeats':0,'invalid_repeats':repeats,'valid_fraction':0.0,'invalid_reasons':{reason:repeats},'interval':None,'confidence_level':.95,'interval_status':'not_computable','interval_reason':reason,'quantile_method':'numpy.quantile(method=linear)','histogram':{'edges':edges.tolist(),'counts':np.histogram([],bins=edges)[0].tolist()},'replicates':records,'resampling_unit':'entire specimen count row with replacement; fixed same three raters','interpretation':'No complete-panel specimen available; percentile bootstrap not computed.'}
+ rng=np.random.default_rng(seed);records=[];values=[];failures=Counter()
  for i in range(repeats):
   indices=rng.integers(0,N,size=N);sample=matrix[indices]
   try:

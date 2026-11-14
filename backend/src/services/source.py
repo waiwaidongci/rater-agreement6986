@@ -14,7 +14,7 @@ def create_study(db,data,actor):
  for s in data.specimens:
   item=Specimen(study_id=study.id,reference=s.reference,description=s.description);db.add(item);db.flush()
   for v in s.votes:db.add(RaterVote(specimen_id=item.id,**v.model_dump()))
- db.commit();record(db,actor,'study.imported',{'study_id':study.id,'specimens':len(items)});return row(study)
+ db.commit();record(db,actor,'study.imported',{'study_id':study.id,'specimens':len(items),'votes':len(votes),'missing_votes':len(items)*3-len(votes)});return row(study)
 
 def source_data(db,id):
  study=db.get(AgreementStudy,id)
